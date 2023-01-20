@@ -32,7 +32,7 @@ def main(
                     address=wallet_address,
                     from_block=from_block,
                     tx_type=TxType.outcoming,
-                    output_file="./outcoming.csv",
+                    output_file="./outgoing.csv",
                 ),
             )
             print("Completed!")
