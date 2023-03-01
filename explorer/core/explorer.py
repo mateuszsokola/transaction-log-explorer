@@ -39,14 +39,18 @@ class Explorer:
         result: List[Tx] = []
 
         for log in logs:
+            tx_hash = log["transactionHash"].hex()
+            tx_fee = await self._get_transaction_fee(tx_hash)
+
             tx = Tx(
                 block_number=int(log["blockNumber"]),
-                tx_hash=log["transactionHash"].hex(),
+                tx_hash=tx_hash,
                 tx_index=log["transactionIndex"],
                 log_index=log["logIndex"],
                 sender=to_normal_address(log["topics"][1].hex()),
                 receiver=to_normal_address(log["topics"][2].hex()),
                 value=str(Web3.toInt(hexstr=log["data"])),
+                tx_fee=str(tx_fee)
             )
             result.append(tx)
 
@@ -73,6 +77,12 @@ class Explorer:
             start_block = end_block + 1
 
         return result
+    
+    async def _get_transaction_fee(self, tx_hash: str) -> int:
+        tx_receipt = await self.async_web3.eth.get_transaction_receipt(tx_hash)
+        tx_fee = int(tx_receipt["effectiveGasPrice"]) * int(tx_receipt["gasUsed"])
+
+        return tx_fee
 
     async def _get_transfer_logs(
         self,

@@ -9,3 +9,4 @@ class Tx(BaseModel):
     sender: str
     receiver: str
     value: str
+    tx_fee: str
